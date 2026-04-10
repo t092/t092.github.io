@@ -1,1051 +1,129 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>吸血鬼獵人 - 肉鴿遊戲 v3.0</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Web Apps</title>
 
-        body {
-            width: 100vw;
-            height: 100vh;
-            background: #1a1a1a;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: Arial, sans-serif;
-            overflow: hidden;
-        }
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #4e73df, #1cc88a);
+      color: #fff;
+      text-align: center;
+    }
 
-        #gameWrapper {
-            display: flex;
-            gap: 10px;
-            align-items: flex-start;
-            padding: 20px;
-        }
+    header {
+      padding: 60px 20px 30px;
+    }
 
-        #gameContainer {
-            position: relative;
-            width: 1280px;
-            height: 800px;
-            background: #0a0a0a;
-            border: 3px solid #ff0000;
-            box-shadow: 0 0 30px rgba(255, 0, 0, 0.3);
-            overflow: hidden;
-        }
+    h1 {
+      font-size: 2.8rem;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
 
-        canvas {
-            display: block;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
+    p.subtitle {
+      font-size: 1.2rem;
+      opacity: 0.9;
+    }
 
-        #statsPanel {
-            width: 250px;
-            height: 800px;
-            background: rgba(0, 0, 0, 0.8);
-            border: 2px solid #00ff00;
-            border-radius: 5px;
-            padding: 15px;
-            color: #00ff00;
-            font-family: monospace;
-            font-size: 14px;
-            overflow-y: auto;
-            box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
-        }
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+      padding: 40px 20px;
+      max-width: 1000px;
+      margin: auto;
+    }
 
-        .stat-section {
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #00ff00;
-        }
+    .card {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      padding: 25px;
+      border-radius: 16px;
+      transition: 0.3s;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
 
-        .stat-section:last-child {
-            border-bottom: none;
-        }
+    .card:hover {
+      transform: translateY(-6px);
+      background: rgba(255, 255, 255, 0.25);
+    }
 
-        .stat-title {
-            color: #ffff00;
-            font-weight: bold;
-            font-size: 16px;
-            margin-bottom: 8px;
-            text-shadow: 0 0 5px rgba(255, 255, 0, 0.5);
-        }
+    .card h2 {
+      margin-top: 0;
+      font-size: 1.6rem;
+    }
 
-        .stat-line {
-            display: flex;
-            justify-content: space-between;
-            margin: 4px 0;
-            padding: 2px 5px;
-        }
+    .card p {
+      font-size: 0.95rem;
+      opacity: 0.9;
+      margin-bottom: 20px;
+    }
 
-        .stat-label {
-            color: #00ffff;
-        }
+    .btn {
+      display: inline-block;
+      padding: 10px 20px;
+      background: #fff;
+      color: #333;
+      border-radius: 8px;
+      font-weight: bold;
+      text-decoration: none;
+      transition: 0.25s;
+    }
 
-        .stat-value {
-            color: #ff00ff;
-            font-weight: bold;
-        }
+    .btn:hover {
+      background: #f1f1f1;
+    }
 
-        .stat-bar {
-            width: 100%;
-            height: 18px;
-            background: #1a1a1a;
-            border: 1px solid #00ff00;
-            border-radius: 2px;
-            margin-top: 4px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .stat-bar-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #00ff00, #00cc00);
-            transition: width 0.3s;
-        }
-
-        .stat-bar.exp .stat-bar-fill {
-            background: linear-gradient(90deg, #ffff00, #ffcc00);
-        }
-
-        .stat-bar-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 12px;
-            font-weight: bold;
-            color: #000000;
-            text-shadow: 0 0 2px rgba(255, 255, 255, 0.5);
-        }
-
-        #menu {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-        }
-
-        #menu h1 {
-            color: #ff0000;
-            font-size: 80px;
-            margin-bottom: 20px;
-            text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
-        }
-
-        #menu h2 {
-            color: #00ff00;
-            font-size: 40px;
-            margin-bottom: 40px;
-        }
-
-        #startBtn {
-            padding: 15px 50px;
-            font-size: 24px;
-            background: #00ff00;
-            color: #000000;
-            border: 2px solid #00ff00;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-bottom: 40px;
-            transition: all 0.3s;
-        }
-
-        #startBtn:hover {
-            background: #00cc00;
-            transform: scale(1.1);
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
-        }
-
-        .instructions {
-            color: #cccccc;
-            font-size: 18px;
-            line-height: 2;
-            text-align: center;
-        }
-
-        #levelDisplay {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            width: 120px;
-            height: 120px;
-            background: radial-gradient(circle, #ff0000, #aa0000);
-            border: 3px solid #ffff00;
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 20;
-            box-shadow: 0 0 20px rgba(255, 0, 0, 0.8), inset 0 0 20px rgba(255, 255, 0, 0.3);
-        }
-
-        #levelDisplay .level-label {
-            color: #ffff00;
-            font-size: 14px;
-            font-weight: bold;
-            text-shadow: 0 0 5px rgba(255, 0, 0, 0.8);
-        }
-
-        #levelDisplay .level-value {
-            color: #ffffff;
-            font-size: 48px;
-            font-weight: bold;
-            text-shadow: 0 0 10px rgba(255, 255, 0, 0.8);
-            line-height: 1;
-        }
-    </style>
+    footer {
+      margin-top: 40px;
+      padding: 20px;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+  </style>
 </head>
+
 <body>
-    <div id="gameWrapper">
-        <div id="gameContainer">
-            <canvas id="gameCanvas" width="1920" height="1200"></canvas>
-            <div id="levelDisplay">
-                <div class="level-label">等級</div>
-                <div class="level-value" id="levelValue">1</div>
-            </div>
-            <div id="menu">
-                <h1>🧛 吸血鬼獵人</h1>
-                <h2>...只要撐十分鐘....</h2>
-                <button id="startBtn">開始遊戲</button>
-                <div class="instructions">
-                    <div><strong>WASD</strong> 或 <strong>方向鍵</strong> 移動</div>
-                    <div>自動瞄準最近敵人</div>
-                    <div>存活 <strong>10 分鐘</strong>即獲勝</div>
-                    <div>收集掉落物品增強能力</div>
-                </div>
-            </div>
-        </div>
-        <div id="statsPanel">
-            <div class="stat-section">
-                <div class="stat-title">⚔️ 玩家等級</div>
-                <div class="stat-line">
-                    <span class="stat-label">等級:</span>
-                    <span class="stat-value" id="statLevel">1</span>
-                </div>
-            </div>
 
-            <div class="stat-section">
-                <div class="stat-title">❤️ 生命值</div>
-                <div class="stat-line">
-                    <span class="stat-label">生命:</span>
-                    <span class="stat-value" id="statHealth">100/100</span>
-                </div>
-            </div>
+  <header>
+    <h1>My Web App Collection</h1>
+    <p class="subtitle">歡迎來到我的 GitHub Web App 入口頁</p>
+  </header>
 
-            <div class="stat-section">
-                <div class="stat-title">⭐ 經驗值</div>
-                <div class="stat-line">
-                    <span class="stat-label">經驗:</span>
-                    <span class="stat-value" id="statExp">0/50</span>
-                </div>
-            </div>
+  <div class="container">
 
-            <div class="stat-section">
-                <div class="stat-title">⚡ 屬性</div>
-                <div class="stat-line">
-                    <span class="stat-label">攻擊:</span>
-                    <span class="stat-value" id="statAttack">5</span>
-                </div>
-                <div class="stat-line">
-                    <span class="stat-label">防護:</span>
-                    <span class="stat-value" id="statDefense">2</span>
-                </div>
-            </div>
-
-            <div class="stat-section">
-                <div class="stat-title">🎯 統計</div>
-                <div class="stat-line">
-                    <span class="stat-label">得分:</span>
-                    <span class="stat-value" id="statScore">0</span>
-                </div>
-                <div class="stat-line">
-                    <span class="stat-label">敵人:</span>
-                    <span class="stat-value" id="statEnemies">0</span>
-                </div>
-            </div>
-
-            <div class="stat-section">
-                <div class="stat-title">⏱️ 時間</div>
-                <div class="stat-line">
-                    <span class="stat-label">已生存:</span>
-                    <span class="stat-value" id="statTime">0秒</span>
-                </div>
-                <div class="stat-line">
-                    <span class="stat-label">剩餘:</span>
-                    <span class="stat-value" id="statTimeLeft">600秒</span>
-                </div>
-            </div>
-        </div>
+    <!-- App A -->
+    <div class="card">
+      <h2>App A</h2>
+      <p>歷史時空探險：戰間期與二戰風雲</p>
+      <a class="btn" href="https://t092.github.io/ww2/" target="_blank">前往`:歷史時空探險：戰間期與二戰風雲</a>
     </div>
 
-    <script>
-        console.log('=== 吸血鬼獵人 v3.0 ===');
+    <!-- App B -->
+    <div class="card">
+      <h2>App B</h2>
+      <p>另一個示範 Web App，展示 B 的功能。</p>
+      <a class="btn" href="https://username.github.io/B" target="_blank">前往 App B</a>
+    </div>
+
+    <!-- 你可以複製這個區塊新增更多 App -->
+    <!--
+    <div class="card">
+      <h2>App C</h2>
+      <p>描述文字...</p>
+      <a class="btn" href="https://username.github.io/C" target="_blank">前往 App C</a>
+    </div>
+    -->
+
+  </div>
+
+  <footer>
+    © 2026 Your Name — GitHub Pages
+  </footer>
 
-        // 音效管理器
-        class SoundManager {
-            constructor() {
-                this.context = new (window.AudioContext || window.webkitAudioContext)();
-                this.masterVolume = 0.3;
-            }
-
-            playShootSound() {
-                const now = this.context.currentTime;
-                const osc = this.context.createOscillator();
-                const gain = this.context.createGain();
-                
-                osc.connect(gain);
-                gain.connect(this.context.destination);
-                
-                osc.frequency.setValueAtTime(800, now);
-                osc.frequency.exponentialRampToValueAtTime(600, now + 0.1);
-                
-                gain.gain.setValueAtTime(this.masterVolume * 0.3, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
-                
-                osc.start(now);
-                osc.stop(now + 0.1);
-            }
-
-            playEnemyDeathSound() {
-                const now = this.context.currentTime;
-                const osc = this.context.createOscillator();
-                const gain = this.context.createGain();
-                
-                osc.connect(gain);
-                gain.connect(this.context.destination);
-                
-                osc.frequency.setValueAtTime(400, now);
-                osc.frequency.exponentialRampToValueAtTime(100, now + 0.3);
-                
-                gain.gain.setValueAtTime(this.masterVolume * 0.4, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
-                
-                osc.start(now);
-                osc.stop(now + 0.3);
-            }
-
-            playLevelUpSound() {
-                const now = this.context.currentTime;
-                const notes = [523, 659, 784]; // C, E, G
-                
-                notes.forEach((freq, idx) => {
-                    const osc = this.context.createOscillator();
-                    const gain = this.context.createGain();
-                    
-                    osc.connect(gain);
-                    gain.connect(this.context.destination);
-                    
-                    osc.frequency.setValueAtTime(freq, now + idx * 0.1);
-                    gain.gain.setValueAtTime(this.masterVolume * 0.3, now + idx * 0.1);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.1 + 0.15);
-                    
-                    osc.start(now + idx * 0.1);
-                    osc.stop(now + idx * 0.1 + 0.15);
-                });
-            }
-
-            playDamageSound() {
-                const now = this.context.currentTime;
-                const osc = this.context.createOscillator();
-                const gain = this.context.createGain();
-                
-                osc.connect(gain);
-                gain.connect(this.context.destination);
-                
-                osc.frequency.setValueAtTime(200, now);
-                osc.frequency.exponentialRampToValueAtTime(150, now + 0.15);
-                
-                gain.gain.setValueAtTime(this.masterVolume * 0.5, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
-                
-                osc.start(now);
-                osc.stop(now + 0.15);
-            }
-
-            playHitSound() {
-                const now = this.context.currentTime;
-                const osc = this.context.createOscillator();
-                const gain = this.context.createGain();
-                
-                osc.connect(gain);
-                gain.connect(this.context.destination);
-                
-                osc.frequency.setValueAtTime(600, now);
-                osc.frequency.exponentialRampToValueAtTime(400, now + 0.08);
-                
-                gain.gain.setValueAtTime(this.masterVolume * 0.3, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
-                
-                osc.start(now);
-                osc.stop(now + 0.08);
-            }
-
-            playCollectSound() {
-                const now = this.context.currentTime;
-                const osc = this.context.createOscillator();
-                const gain = this.context.createGain();
-                
-                osc.connect(gain);
-                gain.connect(this.context.destination);
-                
-                osc.frequency.setValueAtTime(1000, now);
-                osc.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
-                
-                gain.gain.setValueAtTime(this.masterVolume * 0.2, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
-                
-                osc.start(now);
-                osc.stop(now + 0.1);
-            }
-
-            setVolume(vol) {
-                this.masterVolume = Math.max(0, Math.min(1, vol));
-            }
-        }
-
-        const CONFIG = {
-            CANVAS_WIDTH: 1920,
-            CANVAS_HEIGHT: 1200,
-            GAME_DURATION: 600,
-            
-            PLAYER: {
-                INIT_HEALTH: 100,
-                INIT_ATTACK: 5,
-                INIT_DEFENSE: 2,
-                SPEED: 250,
-                BULLET_DAMAGE: 5,
-                BULLET_COUNT: 1,
-                FIRE_RATE: 0.08,
-                SIZE: 64
-            },
-
-            ENEMIES: {
-                SPAWN_RATE_INIT: 2000,
-                SPAWN_RATE_MIN: 500,
-                SPAWN_RATE_DECREMENT: 20,
-                NORMAL: { HEALTH: 10, DAMAGE: 1, SPEED: 100, EXP: 1, SCORE: 1 },
-                ELITE: { HEALTH: 25, DAMAGE: 5, SPEED: 120, EXP: 5, SCORE: 5 },
-                BOSS: { HEALTH: 200, DAMAGE: 25, SPEED: 80, EXP: 100, SCORE: 25 }
-            }
-        };
-
-        class Player {
-            constructor(x, y, soundManager) {
-                this.x = x;
-                this.y = y;
-                this.vx = 0;
-                this.vy = 0;
-                this.size = CONFIG.PLAYER.SIZE;
-                this.angle = 0;
-                this.soundManager = soundManager;
-                
-                this.stats = {
-                    level: 1,
-                    health: CONFIG.PLAYER.INIT_HEALTH,
-                    maxHealth: CONFIG.PLAYER.INIT_HEALTH,
-                    attack: CONFIG.PLAYER.INIT_ATTACK,
-                    defense: CONFIG.PLAYER.INIT_DEFENSE,
-                    exp: 0,
-                    maxExp: 50
-                };
-                
-                this.score = 0;
-                this.kills = { normal: 0, elite: 0, boss: 0 };
-                this.lastFireTime = 0;
-            }
-
-            update(keys, deltaTime) {
-                this.vx = 0;
-                this.vy = 0;
-
-                if (keys['w'] || keys['arrowup']) this.vy -= 1;
-                if (keys['s'] || keys['arrowdown']) this.vy += 1;
-                if (keys['a'] || keys['arrowleft']) this.vx -= 1;
-                if (keys['d'] || keys['arrowright']) this.vx += 1;
-
-                const speed = CONFIG.PLAYER.SPEED * deltaTime;
-                let magnitude = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
-                if (magnitude > 0) {
-                    this.vx = (this.vx / magnitude) * speed;
-                    this.vy = (this.vy / magnitude) * speed;
-                }
-
-                this.x += this.vx;
-                this.y += this.vy;
-
-                // 邊界檢查
-                this.x = Math.max(this.size, Math.min(CONFIG.CANVAS_WIDTH - this.size, this.x));
-                this.y = Math.max(this.size, Math.min(CONFIG.CANVAS_HEIGHT - this.size, this.y));
-            }
-
-            addExp(amount) {
-                this.stats.exp += amount;
-                if (this.stats.exp >= this.stats.maxExp) {
-                    this.levelUp();
-                }
-            }
-
-            levelUp() {
-                this.stats.level += 1;
-                this.stats.exp = 0;
-                this.stats.maxExp = 50;
-                this.stats.maxHealth += 10;
-                this.stats.health = this.stats.maxHealth;
-                this.stats.attack += 2;
-                this.stats.defense += 2;
-                if (this.soundManager) {
-                    this.soundManager.playLevelUpSound();
-                }
-            }
-
-            takeDamage(damage) {
-                // 防護力減少傷害
-                let actualDamage = damage - this.stats.defense;
-                if (actualDamage > 0) {
-                    this.stats.health -= actualDamage;
-                    this.stats.defense = Math.max(0, this.stats.defense - 0.1);
-                } else {
-                    // 防護力完全抵擋傷害
-                    this.stats.defense -= damage;
-                    if (this.stats.defense < 0) {
-                        this.stats.health -= Math.abs(this.stats.defense);
-                        this.stats.defense = 0;
-                    }
-                }
-                return this.stats.health <= 0;
-            }
-
-            collectItem(type) {
-                if (type === 'heal') {
-                    this.stats.health = Math.min(this.stats.maxHealth, this.stats.health + 30);
-                } else if (type === 'shield') {
-                    this.stats.defense += 5;
-                }
-            }
-
-            draw(ctx, playerImage) {
-                ctx.save();
-                ctx.translate(this.x, this.y);
-                ctx.rotate(this.angle);
-                
-                if (playerImage && playerImage.complete) {
-                    // 繪製圖片
-                    ctx.drawImage(playerImage, -this.size/2, -this.size/2, this.size, this.size);
-                } else {
-                    // 回退：繪製黃色方塊
-                    ctx.fillStyle = '#ffff00';
-                    ctx.fillRect(-this.size/2, -this.size/2, this.size, this.size);
-                    
-                    // 砲口
-                    ctx.fillStyle = '#ff00ff';
-                    ctx.fillRect(this.size/2 - 5, -4, 8, 8);
-                }
-                
-                ctx.restore();
-            }
-        }
-
-        class Enemy {
-            constructor(x, y, type) {
-                this.x = x;
-                this.y = y;
-                this.type = type;
-                const cfg = CONFIG.ENEMIES[type.toUpperCase()];
-                
-                this.health = cfg.HEALTH;
-                this.maxHealth = cfg.HEALTH;
-                this.damage = cfg.DAMAGE;
-                this.speed = cfg.SPEED;
-                this.expReward = cfg.EXP;
-                this.score = cfg.SCORE;
-                this.size = type === 'boss' ? 64 : (type === 'elite' ? 64 : 48);
-                this.fireRate = 1.5;
-                this.lastFireTime = 0;
-                
-                // 載入敵人圖片（共用路徑）
-                if (type === 'normal') {
-                    this.image = new Image();
-                    this.image.src = 'snakecroc48.png';
-                } else if (type === 'elite') {
-                    this.image = new Image();
-                    this.image.src = 'REXSKULLS.png';
-                } else if (type === 'boss') {
-                    this.image = new Image();
-                    this.image.src = 'vbabys.png';
-                } else {
-                    this.image = null;
-                }
-            }
-
-            update(player, deltaTime) {
-                const dx = player.x - this.x;
-                const dy = player.y - this.y;
-                const dist = Math.sqrt(dx*dx + dy*dy);
-                
-                if (dist > 0) {
-                    this.x += (dx / dist) * this.speed * deltaTime;
-                    this.y += (dy / dist) * this.speed * deltaTime;
-                }
-                
-                this.lastFireTime += deltaTime;
-            }
-
-            takeDamage(amount) {
-                this.health -= amount;
-            }
-
-            draw(ctx) {
-                // 繪製敵人
-                if (this.image && this.image.complete && (this.type === 'normal' || this.type === 'elite' || this.type === 'boss')) {
-                    ctx.drawImage(this.image, this.x - this.size/2, this.y - this.size/2, this.size, this.size);
-                } else {
-                    const colors = { normal: '#ff0000', elite: '#ff00ff', boss: '#ffff00' };
-                    ctx.fillStyle = colors[this.type];
-                    ctx.fillRect(this.x - this.size/2, this.y - this.size/2, this.size, this.size);
-                }
-                
-                // 血條
-                ctx.fillStyle = '#00ff00';
-                const healthPercent = this.health / this.maxHealth;
-                ctx.fillRect(this.x - this.size/2, this.y - this.size/2 - 8, this.size * healthPercent, 4);
-            }
-        }
-
-        class Bullet {
-            constructor(x, y, angle, fromPlayer, damage) {
-                this.x = x;
-                this.y = y;
-                this.angle = angle;
-                this.speed = 400;
-                this.vx = Math.cos(angle) * this.speed;
-                this.vy = Math.sin(angle) * this.speed;
-                this.fromPlayer = fromPlayer;
-                this.damage = damage;
-                this.alive = true;
-            }
-
-            update(deltaTime) {
-                this.x += this.vx * deltaTime;
-                this.y += this.vy * deltaTime;
-            }
-
-            isOffScreen() {
-                return this.x < -10 || this.x > CONFIG.CANVAS_WIDTH + 10 ||
-                       this.y < -10 || this.y > CONFIG.CANVAS_HEIGHT + 10;
-            }
-
-            collidesWith(entity) {
-                const dx = this.x - entity.x;
-                const dy = this.y - entity.y;
-                const dist = Math.sqrt(dx*dx + dy*dy);
-                return dist < 10 + entity.size/2;
-            }
-
-            draw(ctx) {
-                ctx.fillStyle = this.fromPlayer ? '#00ff00' : '#ff6600';
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, 4, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-
-        class Particle {
-            constructor(x, y, type) {
-                this.x = x;
-                this.y = y;
-                this.type = type;
-                this.size = 10;
-                this.vx = (Math.random() - 0.5) * 200;
-                this.vy = (Math.random() - 0.5) * 200;
-                this.lifetime = 5;
-            }
-
-            update(deltaTime) {
-                this.x += this.vx * deltaTime;
-                this.y += this.vy * deltaTime;
-                this.lifetime -= deltaTime;
-                
-                this.vx *= 0.95;
-                this.vy *= 0.95;
-            }
-
-            collidesWith(player) {
-                const dx = this.x - player.x;
-                const dy = this.y - player.y;
-                const dist = Math.sqrt(dx*dx + dy*dy);
-                return dist < this.size + player.size;
-            }
-
-            draw(ctx) {
-                ctx.font = 'bold 32px Arial';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                const emojis = {
-                    'heal': '🏥',
-                    'shield': '🛡️'
-                };
-                ctx.fillText(emojis[this.type] || '?', this.x, this.y);
-            }
-        }
-
-        class Game {
-            constructor(canvasId) {
-                this.canvas = document.getElementById(canvasId);
-                this.ctx = this.canvas.getContext('2d');
-                this.canvas.width = CONFIG.CANVAS_WIDTH;
-                this.canvas.height = CONFIG.CANVAS_HEIGHT;
-                
-                this.gameState = 'menu';
-                this.gameTime = 0;
-                this.gameStartTime = 0;
-                
-                this.player = null;
-                this.enemies = [];
-                this.bullets = [];
-                this.particles = [];
-                this.lastEnemySpawn = 0;
-                this.enemySpawnRate = CONFIG.ENEMIES.SPAWN_RATE_INIT;
-                
-                // 摄像头位置
-                this.cameraX = 0;
-                this.cameraY = 0;
-                
-                this.keys = {};
-                
-                // 初始化音效管理器
-                this.soundManager = new SoundManager();
-                
-                // 加載背景圖片
-                this.backgroundImage = new Image();
-                this.backgroundImage.src = 'backgrounds1.jpeg';
-                
-                // 加載主角圖片 (使用 HK416W 64x64)
-                this.playerImage = new Image();
-                this.playerImage.src = 'HK416W.png';
-                
-                this.setupEventListeners();
-                this.startLoop();
-            }
-
-            setupEventListeners() {
-                document.addEventListener('keydown', (e) => {
-                    this.keys[e.key.toLowerCase()] = true;
-                    if (e.key === ' ') {
-                        e.preventDefault();
-                        if (this.gameState === 'menu') this.startGame();
-                    }
-                });
-
-                document.addEventListener('keyup', (e) => {
-                    this.keys[e.key.toLowerCase()] = false;
-                });
-
-                document.getElementById('startBtn').addEventListener('click', () => this.startGame());
-            }
-
-            startGame() {
-                console.log('遊戲啟動');
-                this.gameState = 'playing';
-                this.gameStartTime = Date.now();
-                this.gameTime = 0;
-                
-                this.player = new Player(CONFIG.CANVAS_WIDTH / 2, CONFIG.CANVAS_HEIGHT / 2, this.soundManager);
-                this.enemies = [];
-                this.bullets = [];
-                this.particles = [];
-                this.lastEnemySpawn = 0;
-                this.enemySpawnRate = CONFIG.ENEMIES.SPAWN_RATE_INIT;
-                this.lastFireTime = 0;
-                
-                document.getElementById('menu').style.display = 'none';
-            }
-
-            endGame(died) {
-                this.gameState = 'menu';
-                document.getElementById('menu').style.display = 'flex';
-                const status = died ? '遊戲結束' : '任務成功！';
-                alert(`${status}\n等級: ${this.player.stats.level}\n得分: ${this.player.score}`);
-            }
-
-            spawnEnemy() {
-                const side = Math.floor(Math.random() * 4);
-                let x, y;
-                
-                if (side === 0) { x = Math.random() * CONFIG.CANVAS_WIDTH; y = -20; }
-                else if (side === 1) { x = CONFIG.CANVAS_WIDTH + 20; y = Math.random() * CONFIG.CANVAS_HEIGHT; }
-                else if (side === 2) { x = Math.random() * CONFIG.CANVAS_WIDTH; y = CONFIG.CANVAS_HEIGHT + 20; }
-                else { x = -20; y = Math.random() * CONFIG.CANVAS_HEIGHT; }
-                
-                const level = this.player.stats.level;
-                let type = 'normal';
-                if (level >= 3 && Math.random() < 0.2) type = 'elite';
-                if (level >= 6 && Math.floor(level / 6) > 0 && Math.random() < 0.05) type = 'boss';
-                
-                this.enemies.push(new Enemy(x, y, type));
-            }
-
-            startLoop() {
-                const gameLoop = () => {
-                    this.update();
-                    this.draw();
-                    requestAnimationFrame(gameLoop);
-                };
-                gameLoop();
-            }
-
-            update() {
-                if (this.gameState !== 'playing') return;
-
-                this.gameTime = (Date.now() - this.gameStartTime) / 1000;
-
-                this.player.update(this.keys, 1/60);
-                
-                // 更新摄像头位置：跟随主角，保持主角在屏幕中心
-                const viewportWidth = 1280;
-                const viewportHeight = 800;
-                this.cameraX = this.player.x - viewportWidth / 2;
-                this.cameraY = this.player.y - viewportHeight / 2;
-                
-                // 限制摄像头不超出边界
-                this.cameraX = Math.max(0, Math.min(this.cameraX, CONFIG.CANVAS_WIDTH - viewportWidth));
-                this.cameraY = Math.max(0, Math.min(this.cameraY, CONFIG.CANVAS_HEIGHT - viewportHeight));
-                
-                // 玩家射擊 (自動瞄準衝鋒槍)
-                this.lastFireTime += 1/60;
-                if (this.lastFireTime >= CONFIG.PLAYER.FIRE_RATE) {
-                    // 找到最近的敵人
-                    let closestEnemy = null;
-                    let closestDist = Infinity;
-                    
-                    this.enemies.forEach(enemy => {
-                        const dx = enemy.x - this.player.x;
-                        const dy = enemy.y - this.player.y;
-                        const dist = Math.sqrt(dx*dx + dy*dy);
-                        
-                        if (dist < closestDist) {
-                            closestDist = dist;
-                            closestEnemy = enemy;
-                        }
-                    });
-                    
-                    // 如果有敵人，瞄準最近的敵人；否則向面向方向射擊
-                    let angle;
-                    if (closestEnemy && closestDist < 600) {
-                        const dx = closestEnemy.x - this.player.x;
-                        const dy = closestEnemy.y - this.player.y;
-                        angle = Math.atan2(dy, dx);
-                    } else {
-                        angle = this.player.angle;
-                    }
-                    
-                    // 發射單發子彈
-                    this.bullets.push(new Bullet(
-                        this.player.x, this.player.y, angle, true,
-                        this.player.stats.attack
-                    ));
-                    this.soundManager.playShootSound();
-                    this.lastFireTime = 0;
-                }
-
-                // 敵人生成
-                if (this.gameTime * 1000 - this.lastEnemySpawn > this.enemySpawnRate) {
-                    this.spawnEnemy();
-                    this.lastEnemySpawn = this.gameTime * 1000;
-                    if (this.enemySpawnRate > CONFIG.ENEMIES.SPAWN_RATE_MIN) {
-                        this.enemySpawnRate -= CONFIG.ENEMIES.SPAWN_RATE_DECREMENT;
-                    }
-                }
-
-                // 更新敵人（反向迴圈以安全移除）
-                for (let i = this.enemies.length - 1; i >= 0; i--) {
-                    const enemy = this.enemies[i];
-                    enemy.update(this.player, 1/60);
-
-                    // 敵人射擊
-                    if (enemy.lastFireTime >= enemy.fireRate) {
-                        const dx = this.player.x - enemy.x;
-                        const dy = this.player.y - enemy.y;
-                        const angle = Math.atan2(dy, dx);
-                        this.bullets.push(new Bullet(
-                            enemy.x, enemy.y, angle, false,
-                            enemy.damage
-                        ));
-                        enemy.lastFireTime = 0;
-                    }
-
-                    // 敵人與玩家碰撞
-                    const dx = enemy.x - this.player.x;
-                    const dy = enemy.y - this.player.y;
-                    const dist = Math.sqrt(dx*dx + dy*dy);
-                    if (dist < enemy.size/2 + this.player.size) {
-                        const died = this.player.takeDamage(enemy.damage);
-                        this.soundManager.playDamageSound();
-                        if (died) {
-                            this.endGame(true);
-                        }
-                    }
-
-                    if (enemy.health <= 0) {
-                        this.player.addExp(enemy.expReward);
-                        this.player.score += enemy.score;
-                        this.player.kills[enemy.type]++;
-                        this.soundManager.playEnemyDeathSound();
-
-                        if (Math.random() < 0.3) {
-                            const types = ['heal', 'shield'];
-                            this.particles.push(new Particle(enemy.x, enemy.y, types[Math.floor(Math.random() * types.length)]));
-                        }
-
-                        this.enemies.splice(i, 1);
-                    }
-                }
-
-                // 更新子彈（反向迴圈以安全移除）
-                for (let i = this.bullets.length - 1; i >= 0; i--) {
-                    const bullet = this.bullets[i];
-                    bullet.update(1/60);
-
-                    if (bullet.isOffScreen()) {
-                        this.bullets.splice(i, 1);
-                        continue;
-                    }
-
-                    if (bullet.fromPlayer) {
-                        for (let j = this.enemies.length - 1; j >= 0; j--) {
-                            const enemy = this.enemies[j];
-                            if (bullet.collidesWith(enemy)) {
-                                enemy.takeDamage(bullet.damage);
-                                this.soundManager.playHitSound();
-                                bullet.alive = false;
-                                break;
-                            }
-                        }
-                    } else {
-                        if (bullet.collidesWith(this.player)) {
-                            const died = this.player.takeDamage(bullet.damage);
-                            this.soundManager.playDamageSound();
-                            if (died) {
-                                this.endGame(true);
-                            }
-                            bullet.alive = false;
-                        }
-                    }
-
-                    if (!bullet.alive) {
-                        this.bullets.splice(i, 1);
-                    }
-                }
-
-                // 更新掉落物（反向迴圈以安全移除）
-                for (let i = this.particles.length - 1; i >= 0; i--) {
-                    const particle = this.particles[i];
-                    particle.update(1/60);
-
-                    if (particle.collidesWith(this.player)) {
-                        this.player.collectItem(particle.type);
-                        this.soundManager.playCollectSound();
-                        this.particles.splice(i, 1);
-                    }
-                }
-
-                this.updateUI();
-
-                if (this.gameTime >= CONFIG.GAME_DURATION) {
-                    this.endGame(false);
-                }
-            }
-
-            updateUI() {
-                if (this.gameState !== 'playing' || !this.player) return;
-
-                const stats = this.player.stats;
-                const timeLeft = Math.max(0, CONFIG.GAME_DURATION - Math.floor(this.gameTime));
-                const timeSurvived = Math.floor(this.gameTime);
-                
-                // 更新遊戲左上角的等級顯示
-                document.getElementById('levelValue').textContent = stats.level;
-                
-                // 更新等級
-                document.getElementById('statLevel').textContent = stats.level;
-                
-                // 更新生命值
-                document.getElementById('statHealth').textContent = `${stats.health}/${stats.maxHealth}`;
-                
-                // 更新經驗值
-                document.getElementById('statExp').textContent = `${stats.exp}/${stats.maxExp}`;
-                
-                // 更新屬性
-                document.getElementById('statAttack').textContent = stats.attack;
-                document.getElementById('statDefense').textContent = stats.defense.toFixed(1);
-                
-                // 更新統計
-                document.getElementById('statScore').textContent = this.player.score;
-                document.getElementById('statEnemies').textContent = this.enemies.length;
-                
-                // 更新時間
-                document.getElementById('statTime').textContent = timeSurvived + '秒';
-                document.getElementById('statTimeLeft').textContent = timeLeft + '秒';
-            }
-
-            draw() {
-                // 清空背景
-                this.ctx.fillStyle = '#0a0a0a';
-                this.ctx.fillRect(0, 0, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
-
-                if (this.gameState === 'playing') {
-                    // 保存画布状态
-                    this.ctx.save();
-                    
-                    // 应用摄像头变换：将世界坐标平移到屏幕坐标
-                    this.ctx.translate(-this.cameraX, -this.cameraY);
-                    
-                    // 繪製平鋪背景
-                    if (this.backgroundImage && this.backgroundImage.complete) {
-                        const tileSize = 128;
-                        const startX = Math.floor(this.cameraX / tileSize) * tileSize;
-                        const startY = Math.floor(this.cameraY / tileSize) * tileSize;
-                        
-                        for (let x = startX; x < startX + 1280 + tileSize; x += tileSize) {
-                            for (let y = startY; y < startY + 800 + tileSize; y += tileSize) {
-                                this.ctx.drawImage(this.backgroundImage, x, y, tileSize, tileSize);
-                            }
-                        }
-                    }
-                    
-                    // 繪製所有遊戲對象
-                    this.enemies.forEach(enemy => enemy.draw(this.ctx));
-                    this.bullets.forEach(bullet => bullet.draw(this.ctx));
-                    this.particles.forEach(particle => particle.draw(this.ctx));
-                    this.player.draw(this.ctx, this.playerImage);
-                    
-                    // 恢复画布状态
-                    this.ctx.restore();
-                }
-            }
-        }
-
-        // 初始化遊戲
-        window.addEventListener('load', () => {
-            console.log('頁面加載完成');
-            window.game = new Game('gameCanvas');
-        });
-    </script>
 </body>
 </html>
