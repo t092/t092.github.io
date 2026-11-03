@@ -10,44 +10,99 @@
     :root {
       --card-bg: rgba(255, 255, 255, 0.15);
       --card-bg-hover: rgba(255, 255, 255, 0.25);
+      --header-min: clamp(130px, 22vh, 210px);
     }
 
     * {
       box-sizing: border-box;
     }
 
+    html,
+    body {
+      height: 100%;
+    }
+
     body {
       margin: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;               /* 外層不捲動，只有下方區塊自己捲 */
       font-family: "Segoe UI", "Microsoft JhengHei", sans-serif;
-      background: linear-gradient(135deg, #4e73df, #1cc88a);
-      background-attachment: fixed;
+      background: linear-gradient(135deg, #4e73df, #1cc88a) fixed;
       color: #fff;
       text-align: center;
     }
 
+    /* ── 上版面：標題（固定，不隨下方捲動） ── */
     header {
-      padding: 60px 20px 30px;
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 10px;
+      padding: 28px 20px;
+      min-height: var(--header-min);
+      background: rgba(255, 255, 255, 0.08);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      z-index: 2;
     }
 
     h1 {
-      font-size: 2.8rem;
-      margin: 0 0 10px;
+      margin: 0;
+      font-size: clamp(1.6rem, 5vw, 2.8rem);
       font-weight: 700;
+      line-height: 1.2;
     }
 
     p.subtitle {
-      font-size: 1.2rem;
-      opacity: 0.9;
       margin: 0;
+      font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+      opacity: 0.9;
+    }
+
+    /* ── 下版面：連結卡片（獨立捲動區） ── */
+    main {
+      flex: 1 1 auto;
+      min-height: 0;                  /* 讓 flex 子項可以正確產生自己的捲動軸 */
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;    /* 捲到底不會把捲動傳給外層 */
+      scrollbar-color: rgba(255, 255, 255, 0.6) transparent;
+      scrollbar-width: thin;
+    }
+
+    main:focus-visible {
+      outline: 2px solid rgba(255, 255, 255, 0.6);
+      outline-offset: -2px;
+    }
+
+    main::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    main::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    main::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.45);
+      border-radius: 10px;
+    }
+
+    main::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.7);
     }
 
     .container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 20px;
-      padding: 40px 20px;
+      width: 100%;
       max-width: 1000px;
-      margin: auto;
+      margin: 0 auto;
+      padding: 30px 20px 10px;
     }
 
     .card {
@@ -69,7 +124,7 @@
 
     .card h2 {
       margin: 0 0 10px;
-      font-size: 1.6rem;
+      font-size: 1.4rem;
     }
 
     .card p {
@@ -99,11 +154,19 @@
       outline-offset: 2px;
     }
 
+    /* footer 放在下方捲動區內，畫面上仍只有「標題」與「連結」兩塊 */
     footer {
-      margin-top: 40px;
-      padding: 20px;
-      font-size: 0.9rem;
-      opacity: 0.8;
+      padding: 20px 20px 30px;
+      font-size: 0.8rem;
+      opacity: 0.75;
+    }
+
+    /* 螢幕較矮時縮小上方標題區，把空間留給內容 */
+    @media (max-height: 600px) {
+      header {
+        padding: 16px 20px;
+        min-height: 100px;
+      }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -127,85 +190,87 @@
     <p class="subtitle">歡迎來到我的 GitHub Web App 入口頁</p>
   </header>
 
-  <main class="container">
+  <main tabindex="0" role="region" aria-label="應用程式連結">
+    <div class="container">
 
-    <div class="card">
-      <h2>歷史時空探險</h2>
-      <p>戰間期與二戰風雲</p>
-      <a class="btn" href="https://t092.github.io/ww2/" target="_blank" rel="noopener noreferrer">點擊前往</a>
+      <div class="card">
+        <h2>歷史時空探險</h2>
+        <p>戰間期與二戰風雲</p>
+        <a class="btn" href="https://t092.github.io/ww2/" target="_blank" rel="noopener noreferrer">點擊前往</a>
+      </div>
+
+      <div class="card">
+        <h2>偉大的綠洲</h2>
+        <p>自製廢土世界動作小遊戲。</p>
+        <a class="btn" href="https://t092.github.io/WWM/" target="_blank" rel="noopener noreferrer">點擊前往</a>
+      </div>
+
+      <div class="card">
+        <h2>選人小程式</h2>
+        <p>自製抽籤程式。</p>
+        <a class="btn" href="https://t092.github.io/choose/" target="_blank" rel="noopener noreferrer">點擊前往</a>
+      </div>
+
+      <div class="card">
+        <h2>日本時代社會文化變遷</h2>
+        <p>時空探險家</p>
+        <a class="btn" href="https://t092.github.io/114-7-2-3/" target="_blank" rel="noopener noreferrer">點擊前往</a>
+      </div>
+
+      <div class="card">
+        <h2>Q版噴火龍射擊遊戲</h2>
+        <p>噴火龍 GO</p>
+        <a class="btn" href="https://t092.github.io/DWG/" target="_blank" rel="noopener noreferrer">點擊前往</a>
+      </div>
+
+      <div class="card">
+        <h2>Candy Girl</h2>
+        <p>仿松音 CODEX 生成遊戲，用反重力生成一個試試看</p>
+        <a class="btn" href="https://t092.github.io/CandyGirl/" target="_blank" rel="noopener noreferrer">點擊前往</a>
+      </div>
+
+      <div class="card">
+        <h2>火龍跳塔</h2>
+        <p>火龍跳塔</p>
+        <a class="btn" href="https://t092.github.io/DWJ/" target="_blank" rel="noopener noreferrer">點擊前往</a>
+      </div>
+
+      <div class="card">
+        <h2>36 Skills</h2>
+        <p>36 技</p>
+        <a class="btn" href="https://t092.github.io/36cards/" target="_blank" rel="noopener noreferrer">點擊前往</a>
+      </div>
+
+      <div class="card">
+        <h2>突擊飛龍</h2>
+        <p>FocusOnShooting</p>
+        <a class="btn" href="https://t092.github.io/zdra/" target="_blank" rel="noopener noreferrer">點擊前往</a>
+      </div>
+
+      <div class="card">
+        <h2>安置系統</h2>
+        <p>安置系統</p>
+        <a class="btn" href="https://t092.github.io/SPCNEW115/" target="_blank" rel="noopener noreferrer">點擊前往</a>
+      </div>
+
+      <div class="card">
+        <h2>歷史 CAI</h2>
+        <p>歷史 CAI</p>
+        <a class="btn" href="https://t092.github.io/HISCAI/" target="_blank" rel="noopener noreferrer">點擊前往</a>
+      </div>
+
+      <div class="card">
+        <h2>獨立研究紀錄系統</h2>
+        <p>獨立研究記錄</p>
+        <a class="btn" href="https://script.google.com/macros/s/AKfycbyeYDETxZSgvI3xhLgL4qGgk-EB032iEIZ1qAVNi89AlF0mNgdYVo50YexowJR_IQksbA/exec" target="_blank" rel="noopener noreferrer">點擊前往</a>
+      </div>
+
     </div>
 
-    <div class="card">
-      <h2>偉大的綠洲</h2>
-      <p>自製廢土世界動作小遊戲。</p>
-      <a class="btn" href="https://t092.github.io/WWM/" target="_blank" rel="noopener noreferrer">點擊前往</a>
-    </div>
-
-    <div class="card">
-      <h2>選人小程式</h2>
-      <p>自製抽籤程式。</p>
-      <a class="btn" href="https://t092.github.io/choose/" target="_blank" rel="noopener noreferrer">點擊前往</a>
-    </div>
-
-    <div class="card">
-      <h2>日本時代社會文化變遷</h2>
-      <p>時空探險家</p>
-      <a class="btn" href="https://t092.github.io/114-7-2-3/" target="_blank" rel="noopener noreferrer">點擊前往</a>
-    </div>
-
-    <div class="card">
-      <h2>Q版噴火龍射擊遊戲</h2>
-      <p>噴火龍 GO</p>
-      <a class="btn" href="https://t092.github.io/DWG/" target="_blank" rel="noopener noreferrer">點擊前往</a>
-    </div>
-
-    <div class="card">
-      <h2>Candy Girl</h2>
-      <p>仿松音 CODEX 生成遊戲，用反重力生成一個試試看</p>
-      <a class="btn" href="https://t092.github.io/CandyGirl/" target="_blank" rel="noopener noreferrer">點擊前往</a>
-    </div>
-
-    <div class="card">
-      <h2>火龍跳塔</h2>
-      <p>火龍跳塔</p>
-      <a class="btn" href="https://t092.github.io/DWJ/" target="_blank" rel="noopener noreferrer">點擊前往</a>
-    </div>
-
-    <div class="card">
-      <h2>36 Skills</h2>
-      <p>36 技</p>
-      <a class="btn" href="https://t092.github.io/36cards/" target="_blank" rel="noopener noreferrer">點擊前往</a>
-    </div>
-
-    <div class="card">
-      <h2>突擊飛龍</h2>
-      <p>FocusOnShooting</p>
-      <a class="btn" href="https://t092.github.io/zdra/" target="_blank" rel="noopener noreferrer">點擊前往</a>
-    </div>
-
-    <div class="card">
-      <h2>安置系統</h2>
-      <p>安置系統</p>
-      <a class="btn" href="https://t092.github.io/SPCNEW115/" target="_blank" rel="noopener noreferrer">點擊前往</a>
-    </div>
-
-    <div class="card">
-      <h2>歷史 CAI</h2>
-      <p>歷史 CAI</p>
-      <a class="btn" href="https://t092.github.io/HISCAI/" target="_blank" rel="noopener noreferrer">點擊前往</a>
-    </div>
-
-    <div class="card">
-      <h2>獨立研究紀錄系統</h2>
-      <p>獨立研究記錄</p>
-      <a class="btn" href="https://script.google.com/macros/s/AKfycbyeYDETxZSgvI3xhLgL4qGgk-EB032iEIZ1qAVNi89AlF0mNgdYVo50YexowJR_IQksbA/exec" target="_blank" rel="noopener noreferrer">點擊前往</a>
-    </div>
-
+    <footer>
+      © 2026 t092 — GitHub Pages
+    </footer>
   </main>
-
-  <footer>
-    © 2026 t092 — GitHub Pages
-  </footer>
 
 </body>
 </html>
