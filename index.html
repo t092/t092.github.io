@@ -3,13 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Web Apps</title>
+  <meta name="description" content="t092 的 GitHub Pages Web App 入口頁：歷史教材、自製小遊戲與教學工具集合。">
+  <title>My Web Apps | t092</title>
 
   <style>
+    :root {
+      --card-bg: rgba(255, 255, 255, 0.15);
+      --card-bg-hover: rgba(255, 255, 255, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
-      font-family: "Segoe UI", sans-serif;
+      font-family: "Segoe UI", "Microsoft JhengHei", sans-serif;
       background: linear-gradient(135deg, #4e73df, #1cc88a);
+      background-attachment: fixed;
       color: #fff;
       text-align: center;
     }
@@ -20,13 +31,14 @@
 
     h1 {
       font-size: 2.8rem;
-      margin-bottom: 10px;
+      margin: 0 0 10px;
       font-weight: 700;
     }
 
     p.subtitle {
       font-size: 1.2rem;
       opacity: 0.9;
+      margin: 0;
     }
 
     .container {
@@ -39,43 +51,52 @@
     }
 
     .card {
-      background: rgba(255, 255, 255, 0.15);
+      display: flex;
+      flex-direction: column;
+      background: var(--card-bg);
       backdrop-filter: blur(10px);
       padding: 25px;
       border-radius: 16px;
-      transition: 0.3s;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      transition: transform 0.3s, background 0.3s;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
     }
 
-    .card:hover {
+    .card:hover,
+    .card:focus-within {
       transform: translateY(-6px);
-      background: rgba(255, 255, 255, 0.25);
+      background: var(--card-bg-hover);
     }
 
     .card h2 {
-      margin-top: 0;
+      margin: 0 0 10px;
       font-size: 1.6rem;
     }
 
     .card p {
+      flex: 1;
       font-size: 0.95rem;
       opacity: 0.9;
-      margin-bottom: 20px;
+      margin: 0 0 20px;
     }
 
     .btn {
-      display: inline-block;
+      align-self: center;
       padding: 10px 20px;
       background: #fff;
       color: #333;
       border-radius: 8px;
       font-weight: bold;
       text-decoration: none;
-      transition: 0.25s;
+      transition: background 0.25s;
     }
 
     .btn:hover {
       background: #f1f1f1;
+    }
+
+    .btn:focus-visible {
+      outline: 3px solid #ffd54f;
+      outline-offset: 2px;
     }
 
     footer {
@@ -83,6 +104,18 @@
       padding: 20px;
       font-size: 0.9rem;
       opacity: 0.8;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .card,
+      .btn {
+        transition: none;
+      }
+
+      .card:hover,
+      .card:focus-within {
+        transform: none;
+      }
     }
   </style>
 </head>
@@ -94,115 +127,81 @@
     <p class="subtitle">歡迎來到我的 GitHub Web App 入口頁</p>
   </header>
 
-  <div class="container">
+  <main class="container">
 
-    <!-- App A -->
     <div class="card">
-      <h2>歷史時空探險：</h2>
+      <h2>歷史時空探險</h2>
       <p>戰間期與二戰風雲</p>
-      <a class="btn" href="https://t092.github.io/ww2/" target="_blank"> 點擊前往</a>
+      <a class="btn" href="https://t092.github.io/ww2/" target="_blank" rel="noopener noreferrer">點擊前往</a>
     </div>
 
-    <!-- App B -->
     <div class="card">
       <h2>偉大的綠洲</h2>
       <p>自製廢土世界動作小遊戲。</p>
-      <a class="btn" href="https://t092.github.io/WWM/" target="_blank"> 點擊前往</a>
+      <a class="btn" href="https://t092.github.io/WWM/" target="_blank" rel="noopener noreferrer">點擊前往</a>
     </div>
 
-     <!-- App C -->
     <div class="card">
       <h2>選人小程式</h2>
       <p>自製抽籤程式。</p>
-      <a class="btn" href="https://t092.github.io/choose/" target="_blank"> 點擊前往</a>
+      <a class="btn" href="https://t092.github.io/choose/" target="_blank" rel="noopener noreferrer">點擊前往</a>
     </div>
 
-     <!-- App D -->
     <div class="card">
       <h2>日本時代社會文化變遷</h2>
       <p>時空探險家</p>
-      <a class="btn" href="https://t092.github.io/114-7-2-3/" target="_blank"> 點擊前往</a>
+      <a class="btn" href="https://t092.github.io/114-7-2-3/" target="_blank" rel="noopener noreferrer">點擊前往</a>
     </div>
-    
-     <!-- App E -->
+
     <div class="card">
       <h2>Q版噴火龍射擊遊戲</h2>
       <p>噴火龍 GO</p>
-      <a class="btn" href="https://t092.github.io/DWG/" target="_blank"> 點擊前往</a>
+      <a class="btn" href="https://t092.github.io/DWG/" target="_blank" rel="noopener noreferrer">點擊前往</a>
     </div>
 
-     <!-- App F -->
     <div class="card">
       <h2>Candy Girl</h2>
-      <p>仿松音CODEX 生成遊戲，用反重力生成一個試試看</p>
-      <a class="btn" href=" https://t092.github.io/CandyGirl/" target="_blank"> 點擊前往</a>
+      <p>仿松音 CODEX 生成遊戲，用反重力生成一個試試看</p>
+      <a class="btn" href="https://t092.github.io/CandyGirl/" target="_blank" rel="noopener noreferrer">點擊前往</a>
     </div>
 
-      <!-- App G -->
     <div class="card">
       <h2>火龍跳塔</h2>
       <p>火龍跳塔</p>
-      <a class="btn" href="https://t092.github.io/DWJ/" target="_blank"> 點擊前往</a>
+      <a class="btn" href="https://t092.github.io/DWJ/" target="_blank" rel="noopener noreferrer">點擊前往</a>
     </div>
 
-    
-      <!-- App H -->
     <div class="card">
-      <h2>36 Skills </h2>
-      <p> 36 技 </p>
-      <a class="btn" href="https://t092.github.io/36cards/" target="_blank"> 點擊前往</a>
+      <h2>36 Skills</h2>
+      <p>36 技</p>
+      <a class="btn" href="https://t092.github.io/36cards/" target="_blank" rel="noopener noreferrer">點擊前往</a>
     </div>
 
- 
-      <!-- App I -->
     <div class="card">
-      <h2>突擊飛龍 </h2>
-      <p> FocusOnShooting </p>
-      <a class="btn" href="https://t092.github.io/zdra/" target="_blank"> 點擊前往</a>
+      <h2>突擊飛龍</h2>
+      <p>FocusOnShooting</p>
+      <a class="btn" href="https://t092.github.io/zdra/" target="_blank" rel="noopener noreferrer">點擊前往</a>
     </div>
 
-
-
-      <!-- App J -->
     <div class="card">
-      <h2>安置系統 </h2>
-      <p> 安置系統 </p>
-      <a class="btn" href="https://t092.github.io/SPCNEW115/" target="_blank"> 點擊前往</a>
+      <h2>安置系統</h2>
+      <p>安置系統</p>
+      <a class="btn" href="https://t092.github.io/SPCNEW115/" target="_blank" rel="noopener noreferrer">點擊前往</a>
     </div>
 
-
-      <!-- App K -->
     <div class="card">
-      <h2>歷史 CAI </h2>
-      <p> 歷史 CAI </p>
-      <a class="btn" href="https://t092.github.io/HISCAI/" target="_blank"> 點擊前往</a>
+      <h2>歷史 CAI</h2>
+      <p>歷史 CAI</p>
+      <a class="btn" href="https://t092.github.io/HISCAI/" target="_blank" rel="noopener noreferrer">點擊前往</a>
     </div>
 
-
-  
-
-
-      <!-- App M -->
     <div class="card">
-      <h2> 獨立研究紀錄系統 </h2>
-      <p> 獨立研究記錄</p>
-      <a class="btn" href="https://script.google.com/macros/s/AKfycbyeYDETxZSgvI3xhLgL4qGgk-EB032iEIZ1qAVNi89AlF0mNgdYVo50YexowJR_IQksbA/exec" target="_blank"> 點擊前往</a>
+      <h2>獨立研究紀錄系統</h2>
+      <p>獨立研究記錄</p>
+      <a class="btn" href="https://script.google.com/macros/s/AKfycbyeYDETxZSgvI3xhLgL4qGgk-EB032iEIZ1qAVNi89AlF0mNgdYVo50YexowJR_IQksbA/exec" target="_blank" rel="noopener noreferrer">點擊前往</a>
     </div>
 
-
-    
-    
-
-    <!-- 你可以複製這個區塊新增更多 App -->
-    <!-- 
-    <div class="card">
-      <h2>App C</h2>
-      <p>描述文字...</p>
-      <a class="btn" href="https://username.github.io/C" target="_blank">前往 App C</a>
-    </div>
-    -->
-
-  </div>
+  </main>
 
   <footer>
     © 2026 t092 — GitHub Pages
