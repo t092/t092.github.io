@@ -55,6 +55,8 @@
 
     /* ── 上版面：標題（固定，不隨下方捲動） ── */
     header {
+      position: relative;
+      overflow: hidden;
       flex: 0 0 auto;
       display: flex;
       flex-direction: column;
@@ -65,7 +67,122 @@
       background: linear-gradient(180deg, rgba(5, 11, 22, 0.45), rgba(8, 25, 42, 0.9));
       border-bottom: 2px solid var(--gold);
       box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+      isolation: isolate;
       z-index: 3;
+    }
+
+    /* ── 標題列星艦艦隊動畫（背景層，不影響文字） ── */
+    .fleet {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    header h1,
+    header p.subtitle {
+      position: relative;
+      z-index: 1;
+    }
+
+    .fleet .ship {
+      will-change: transform;
+    }
+
+    .fleet .ship--1 {
+      animation: fleet-cross-1 26s linear infinite;
+    }
+
+    .fleet .ship--2 {
+      animation: fleet-cross-2 34s linear infinite;
+      animation-delay: -8s;
+    }
+
+    .fleet .ship--3 {
+      animation: fleet-cross-3 19s linear infinite;
+      animation-delay: -13s;
+    }
+
+    .fleet .ship--4 {
+      animation: fleet-cross-4 23s linear infinite;
+      animation-delay: -5s;
+    }
+
+    .fleet .ship--5 {
+      animation: fleet-cross-5 15s linear infinite;
+      animation-delay: -9s;
+    }
+
+    .fleet .eng {
+      animation: fleet-eng 1.4s ease-in-out infinite alternate;
+    }
+
+    .fleet .trail {
+      transform-box: fill-box;
+      transform-origin: right center;
+      animation: fleet-trail 1.4s ease-in-out infinite alternate;
+    }
+
+    .fleet .streak {
+      animation: fleet-streak 4.5s linear infinite;
+    }
+
+    .fleet .streak:nth-child(2) {
+      animation-duration: 3.2s;
+      animation-delay: -1.4s;
+    }
+
+    .fleet .streak:nth-child(3) {
+      animation-duration: 5.8s;
+      animation-delay: -2.7s;
+    }
+
+    .fleet .streak:nth-child(4) {
+      animation-duration: 3.9s;
+      animation-delay: -0.6s;
+    }
+
+    @keyframes fleet-cross-1 {
+      from { transform: translate(-280px, 42px); }
+      to { transform: translate(1360px, 66px); }
+    }
+
+    @keyframes fleet-cross-2 {
+      from { transform: translate(1370px, 6px) scale(-1, 1); }
+      to { transform: translate(-220px, 34px) scale(-1, 1); }
+    }
+
+    @keyframes fleet-cross-3 {
+      from { transform: translate(1360px, 158px) scale(-1, 1); }
+      to { transform: translate(-220px, 118px) scale(-1, 1); }
+    }
+
+    @keyframes fleet-cross-4 {
+      from { transform: translate(1370px, 40px) scale(-1, 1); }
+      to { transform: translate(-180px, 118px) scale(-1, 1); }
+    }
+
+    @keyframes fleet-cross-5 {
+      from { transform: translate(-200px, 168px); }
+      to { transform: translate(1380px, 132px); }
+    }
+
+    @keyframes fleet-eng {
+      from { opacity: 0.4; }
+      to { opacity: 1; }
+    }
+
+    @keyframes fleet-trail {
+      from { opacity: 0.3; transform: scaleX(0.6); }
+      to { opacity: 0.85; transform: scaleX(1.15); }
+    }
+
+    @keyframes fleet-streak {
+      from { opacity: 0; stroke-dashoffset: 260; }
+      35% { opacity: 0.75; }
+      to { opacity: 0; stroke-dashoffset: -160; }
     }
 
     h1 {
@@ -446,7 +563,11 @@
       .trek-bg .orbit,
       .trek-bg .ship,
       .trek-bg .engine,
-      .trek-bg .warp-line {
+      .trek-bg .warp-line,
+      .fleet .ship,
+      .fleet .eng,
+      .fleet .trail,
+      .fleet .streak {
         animation: none;
       }
 
@@ -462,6 +583,111 @@
 <body>
 
   <header>
+    <svg class="fleet" viewBox="0 0 1200 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id="fleetHull" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#eafaff" stop-opacity="0.95" />
+          <stop offset="0.55" stop-color="#4cc9f0" stop-opacity="0.75" />
+          <stop offset="1" stop-color="#12618a" stop-opacity="0.95" />
+        </linearGradient>
+        <linearGradient id="fleetTrail" x1="1" y1="0" x2="0" y2="0">
+          <stop offset="0" stop-color="#ffe48a" stop-opacity="0.85" />
+          <stop offset="0.45" stop-color="#4cc9f0" stop-opacity="0.35" />
+          <stop offset="1" stop-color="#4cc9f0" stop-opacity="0" />
+        </linearGradient>
+      </defs>
+
+      <!-- 星際背景拉力線 -->
+      <g fill="none" stroke-linecap="round">
+        <line class="streak" x1="-200" y1="30" x2="1400" y2="30" stroke="#4cc9f0" stroke-width="1" stroke-dasharray="40 260" opacity="0.45" />
+        <line class="streak" x1="-200" y1="86" x2="1400" y2="86" stroke="#ffe48a" stroke-width="1" stroke-dasharray="22 300" opacity="0.35" />
+        <line class="streak" x1="-200" y1="140" x2="1400" y2="140" stroke="#4cc9f0" stroke-width="1" stroke-dasharray="54 220" opacity="0.4" />
+        <line class="streak" x1="-200" y1="178" x2="1400" y2="178" stroke="#55d6be" stroke-width="1" stroke-dasharray="28 280" opacity="0.3" />
+      </g>
+
+      <!-- 旗艦：由左往右，最高艦橋 -->
+      <g class="ship ship--1" opacity="0.92">
+        <g transform="scale(1.7)">
+          <path class="trail" d="M14 30 L-40 30 M14 44 L-30 44" stroke="url(#fleetTrail)" stroke-width="2.4" stroke-linecap="round" />
+          <rect x="16" y="23.5" width="41" height="5" rx="2.5" fill="#195275" stroke="#4cc9f0" stroke-width="1" />
+          <rect x="16" y="37.5" width="41" height="5" rx="2.5" fill="#195275" stroke="#4cc9f0" stroke-width="1" />
+          <ellipse cx="62" cy="16" rx="29" ry="8.5" fill="url(#fleetHull)" stroke="#d9f5ff" stroke-width="1.1" />
+          <ellipse cx="62" cy="16" rx="29" ry="8.5" fill="none" stroke="#ffe48a" stroke-width="1" opacity="0.55" />
+          <ellipse cx="58" cy="10.5" rx="9" ry="3" fill="#eafaff" opacity="0.6" />
+          <path d="M54 23 L62 32 L76 32 L70 23Z" fill="#1b6c91" stroke="#4cc9f0" stroke-width="1" />
+          <rect x="36" y="30" width="44" height="9" rx="4.5" fill="#1b6c91" stroke="#4cc9f0" stroke-width="1" />
+          <circle cx="55" cy="26" r="2.6" fill="#ffe48a" />
+          <circle cx="55" cy="40" r="2.6" fill="#ffe48a" />
+          <circle class="eng" cx="17" cy="26" r="2.4" fill="#7fe7ff" />
+          <circle class="eng" cx="17" cy="40" r="2.4" fill="#7fe7ff" />
+          <circle cx="89" cy="34.5" r="2.2" fill="#7fe7ff" opacity="0.8" />
+        </g>
+      </g>
+
+      <!-- 巡航艦：由右往左 -->
+      <g class="ship ship--2" opacity="0.75">
+        <g transform="scale(1.35)">
+          <path class="trail" d="M14 30 L-34 30 M14 44 L-26 44" stroke="url(#fleetTrail)" stroke-width="2.6" stroke-linecap="round" />
+          <rect x="16" y="23.5" width="40" height="4.6" rx="2.3" fill="#195275" stroke="#4cc9f0" stroke-width="1.2" />
+          <rect x="16" y="37.5" width="40" height="4.6" rx="2.3" fill="#195275" stroke="#4cc9f0" stroke-width="1.2" />
+          <ellipse cx="62" cy="16" rx="27" ry="8" fill="url(#fleetHull)" stroke="#d9f5ff" stroke-width="1.2" />
+          <ellipse cx="58" cy="11" rx="8" ry="2.6" fill="#eafaff" opacity="0.55" />
+          <path d="M55 23 L62 31 L75 31 L69 23Z" fill="#1b6c91" stroke="#4cc9f0" stroke-width="1.2" />
+          <rect x="38" y="30" width="40" height="8" rx="4" fill="#1b6c91" stroke="#4cc9f0" stroke-width="1.2" />
+          <circle cx="54" cy="26" r="2.4" fill="#ffe48a" />
+          <circle cx="54" cy="40" r="2.4" fill="#ffe48a" />
+          <circle class="eng" cx="17" cy="26" r="2.2" fill="#7fe7ff" />
+          <circle class="eng" cx="17" cy="40" r="2.2" fill="#7fe7ff" />
+        </g>
+      </g>
+
+      <!-- 偵察艦：斜向掠過 -->
+      <g class="ship ship--3" opacity="0.68">
+        <g transform="scale(1.1)">
+          <path class="trail" d="M14 30 L-44 30" stroke="url(#fleetTrail)" stroke-width="3" stroke-linecap="round" />
+          <rect x="16" y="23.5" width="40" height="5" rx="2.5" fill="#195275" stroke="#4cc9f0" stroke-width="1.4" />
+          <rect x="16" y="37.5" width="40" height="5" rx="2.5" fill="#195275" stroke="#4cc9f0" stroke-width="1.4" />
+          <ellipse cx="62" cy="16" rx="28" ry="8.5" fill="url(#fleetHull)" stroke="#d9f5ff" stroke-width="1.4" />
+          <path d="M55 23 L62 31 L75 31 L69 23Z" fill="#1b6c91" stroke="#4cc9f0" stroke-width="1.4" />
+          <rect x="38" y="30" width="40" height="8" rx="4" fill="#1b6c91" stroke="#4cc9f0" stroke-width="1.4" />
+          <circle cx="55" cy="26" r="2.6" fill="#ffe48a" />
+          <circle cx="55" cy="40" r="2.6" fill="#ffe48a" />
+          <circle class="eng" cx="17" cy="26" r="2.4" fill="#7fe7ff" />
+          <circle class="eng" cx="17" cy="40" r="2.4" fill="#7fe7ff" />
+        </g>
+      </g>
+
+      <!-- 遠程艦：右下往左上 -->
+      <g class="ship ship--4" opacity="0.5">
+        <g transform="scale(0.85)">
+          <path class="trail" d="M14 30 L-26 30" stroke="url(#fleetTrail)" stroke-width="2.4" stroke-linecap="round" />
+          <rect x="16" y="23.5" width="40" height="5" rx="2.5" fill="#195275" stroke="#4cc9f0" stroke-width="1.8" />
+          <rect x="16" y="37.5" width="40" height="5" rx="2.5" fill="#195275" stroke="#4cc9f0" stroke-width="1.8" />
+          <ellipse cx="62" cy="16" rx="28" ry="9" fill="url(#fleetHull)" stroke="#d9f5ff" stroke-width="1.8" />
+          <path d="M55 23 L62 31 L75 31 L69 23Z" fill="#1b6c91" stroke="#4cc9f0" stroke-width="1.8" />
+          <rect x="38" y="30" width="40" height="8" rx="4" fill="#1b6c91" stroke="#4cc9f0" stroke-width="1.8" />
+          <circle cx="55" cy="26" r="2.8" fill="#ffe48a" />
+          <circle cx="55" cy="40" r="2.8" fill="#ffe48a" />
+          <circle class="eng" cx="17" cy="26" r="2.6" fill="#7fe7ff" />
+          <circle class="eng" cx="17" cy="40" r="2.6" fill="#7fe7ff" />
+        </g>
+      </g>
+
+      <!-- 護航艦：低空快速穿越 -->
+      <g class="ship ship--5" opacity="0.6">
+        <g transform="scale(0.62)">
+          <path class="trail" d="M14 30 L-56 30" stroke="url(#fleetTrail)" stroke-width="3.4" stroke-linecap="round" />
+          <rect x="16" y="23.5" width="40" height="5" rx="2.5" fill="#195275" stroke="#4cc9f0" stroke-width="2" />
+          <rect x="16" y="37.5" width="40" height="5" rx="2.5" fill="#195275" stroke="#4cc9f0" stroke-width="2" />
+          <ellipse cx="62" cy="16" rx="28" ry="9" fill="url(#fleetHull)" stroke="#d9f5ff" stroke-width="2" />
+          <path d="M55 23 L62 31 L75 31 L69 23Z" fill="#1b6c91" stroke="#4cc9f0" stroke-width="2" />
+          <rect x="38" y="30" width="40" height="8" rx="4" fill="#1b6c91" stroke="#4cc9f0" stroke-width="2" />
+          <circle class="eng" cx="17" cy="26" r="3" fill="#7fe7ff" />
+          <circle class="eng" cx="17" cy="40" r="3" fill="#7fe7ff" />
+        </g>
+      </g>
+    </svg>
+
     <h1>My Web App Collection</h1>
     <p class="subtitle">歡迎來到我的 GitHub Web App 入口頁</p>
   </header>
