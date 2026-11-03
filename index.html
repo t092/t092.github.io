@@ -207,8 +207,68 @@
 
     /* 右：連結卡片 */
     .list {
+      position: relative;
       flex: 1 1 auto;
       text-align: center;
+    }
+
+    /* 右下角的 Star Trek 風格 SVG 背景：不阻擋卡片與按鈕操作 */
+    .trek-bg {
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+      z-index: 0;
+      width: min(42vw, 430px);
+      min-width: 260px;
+      height: auto;
+      pointer-events: none;
+      opacity: 0.28;
+      filter: drop-shadow(0 0 14px rgba(76, 201, 240, 0.28));
+    }
+
+    .trek-bg .orbit {
+      transform-origin: 210px 148px;
+      animation: trek-orbit 18s linear infinite;
+    }
+
+    .trek-bg .ship {
+      transform-origin: 210px 148px;
+      animation: trek-hover 5s ease-in-out infinite;
+    }
+
+    .trek-bg .engine {
+      animation: trek-engine 1.6s ease-in-out infinite alternate;
+    }
+
+    .trek-bg .warp-line {
+      stroke-dasharray: 24 180;
+      animation: trek-warp 3s linear infinite;
+    }
+
+    @keyframes trek-orbit {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes trek-hover {
+      0%, 100% { transform: translateY(0) rotate(-1deg); }
+      50% { transform: translateY(-7px) rotate(1deg); }
+    }
+
+    @keyframes trek-engine {
+      from { opacity: 0.45; transform: scaleX(0.8); }
+      to { opacity: 1; transform: scaleX(1.15); }
+    }
+
+    @keyframes trek-warp {
+      from { stroke-dashoffset: 200; opacity: 0.15; }
+      45% { opacity: 0.8; }
+      to { stroke-dashoffset: -200; opacity: 0.05; }
+    }
+
+    .container,
+    .list footer {
+      position: relative;
+      z-index: 1;
     }
 
     .container {
@@ -383,6 +443,13 @@
         transition: none;
       }
 
+      .trek-bg .orbit,
+      .trek-bg .ship,
+      .trek-bg .engine,
+      .trek-bg .warp-line {
+        animation: none;
+      }
+
       .card:hover,
       .card:focus-within,
       .nav-btn[aria-pressed="true"] {
@@ -424,6 +491,50 @@
 
     <!-- 右側：網站連結 -->
     <section class="list pane" id="list" tabindex="0" role="region" aria-label="網站連結">
+      <svg class="trek-bg" viewBox="0 0 420 280" aria-hidden="true" focusable="false">
+        <defs>
+          <linearGradient id="trekHull" x1="0" x2="1" y1="0" y2="1">
+            <stop offset="0" stop-color="#d9f5ff" stop-opacity="0.9" />
+            <stop offset="0.48" stop-color="#4cc9f0" stop-opacity="0.72" />
+            <stop offset="1" stop-color="#12618a" stop-opacity="0.9" />
+          </linearGradient>
+          <linearGradient id="trekGold" x1="0" x2="1">
+            <stop offset="0" stop-color="#ffe48a" />
+            <stop offset="1" stop-color="#f5c542" />
+          </linearGradient>
+          <filter id="trekGlow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+
+        <!-- 脈衝航行線與環形掃描器 -->
+        <g fill="none" stroke-linecap="round">
+          <path class="warp-line" d="M18 218 C106 190 280 196 408 128" stroke="#4cc9f0" stroke-width="2" />
+          <path class="warp-line" d="M28 246 C132 218 292 224 400 172" stroke="#f5c542" stroke-width="1.5" />
+          <g class="orbit" opacity="0.75">
+            <ellipse cx="210" cy="148" rx="174" ry="47" stroke="#4cc9f0" stroke-width="1" stroke-dasharray="5 9" />
+            <ellipse cx="210" cy="148" rx="132" ry="30" stroke="#f5c542" stroke-width="1" stroke-dasharray="2 11" />
+            <circle cx="384" cy="148" r="4" fill="#ffe48a" stroke="none" />
+          </g>
+        </g>
+
+        <!-- 抽象聯邦星艦：碟形艦身、頸部與雙曲速引擎 -->
+        <g class="ship" filter="url(#trekGlow)">
+          <path d="M102 137 C127 105 190 91 249 103 C278 109 296 120 307 136 C275 148 232 155 180 154 C145 153 118 147 102 137Z" fill="url(#trekHull)" stroke="#d9f5ff" stroke-width="1.5" />
+          <ellipse cx="205" cy="132" rx="91" ry="21" fill="none" stroke="#ffe48a" stroke-width="2" opacity="0.8" />
+          <path d="M174 153 L190 178 L230 178 L245 153" fill="#195275" stroke="#4cc9f0" stroke-width="2" />
+          <path d="M188 176 L155 211 L169 215 L204 180Z" fill="#1b6c91" stroke="#4cc9f0" stroke-width="1.5" />
+          <path d="M229 176 L265 211 L251 215 L213 180Z" fill="#1b6c91" stroke="#4cc9f0" stroke-width="1.5" />
+          <path class="engine" d="M151 211 L133 231 L148 234 L169 215Z" fill="url(#trekGold)" stroke="#ffe48a" stroke-width="1.5" />
+          <path class="engine" d="M265 211 L283 231 L268 234 L251 215Z" fill="url(#trekGold)" stroke="#ffe48a" stroke-width="1.5" />
+          <circle cx="205" cy="132" r="7" fill="#ffe48a" opacity="0.9" />
+        </g>
+      </svg>
+
       <div class="container">
 
         <!-- 歷史教學 -->
